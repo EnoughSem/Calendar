@@ -1,0 +1,14 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.CalendarApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/buttonColorBG</item>
+        <item name="android:background">@color/backGround</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Button.Theme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:backgroundTint">@color/buttonColorBG</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="Theme.CalendarApp" parent="Base.Theme.CalendarApp" />
+</resources>
