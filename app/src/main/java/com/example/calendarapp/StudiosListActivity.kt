@@ -38,16 +38,17 @@ class StudiosListActivity : AppCompatActivity() {
                     bilding.studiosList.adapter =
                         StudiosNameListJsonAdapter(context, studiosList)
                     bilding.studiosList.setOnItemClickListener { _, _, position, _ ->
-                        openStudioCalendar(studiosList[position].studio_id)
+                        openStudioCalendar(studiosList[position].studio_id, studiosList[position].studio_name)
                     }
                 }
             }
         }
     }
 
-    private fun openStudioCalendar(studio_id: Int){
+    private fun openStudioCalendar(studio_id: Int, studio_name : String){
         val intent = Intent(this, StudioCalendar::class.java)
-        intent.putExtra(StudioCalendar.STUDIO ,studio_id.toString())
+        intent.putExtra(StudioCalendar.STUDIO_NAME, studio_name)
+        intent.putExtra(StudioCalendar.STUDIO_ID ,studio_id.toString())
         startActivity(intent)
     }
 }

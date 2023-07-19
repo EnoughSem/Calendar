@@ -38,16 +38,17 @@ class EquipmentsListActivity : AppCompatActivity() {
                     bilding.List.adapter =
                         EquipmentsNameListJsonAdapter(context, studiosList)
                     bilding.List.setOnItemClickListener { _, _, position, _ ->
-                        openEquipmentCalendar(studiosList[position].equipment_id)
+                        openEquipmentCalendar(studiosList[position].equipment_id, studiosList[position].equipment_name)
                     }
                 }
             }
         }
     }
 
-    private fun openEquipmentCalendar(equipment_id : Int){
+    private fun openEquipmentCalendar(equipment_id : Int, equipment_name : String){
         val intent = Intent(this, EquipmentCalendar::class.java)
-        intent.putExtra(EquipmentCalendar.EQUIPMENT ,equipment_id.toString())
+        intent.putExtra(EquipmentCalendar.EQUIPMENT_ID ,equipment_id.toString())
+        intent.putExtra(EquipmentCalendar.EQUIPMENT_NAME ,equipment_name)
         startActivity(intent)
     }
 }
