@@ -12,7 +12,8 @@ class StartActivity : AppCompatActivity() {
 
         val openStudios = findViewById<Button>(R.id.openStudios)
         openStudios.setOnClickListener {
-            openStudiosListActivity()
+            val intent = Intent(this, StudiosListActivity::class.java)
+            startActivity(intent)
         }
 
         val openEquipment = findViewById<Button>(R.id.openEquipment)
@@ -20,10 +21,12 @@ class StartActivity : AppCompatActivity() {
             val intent = Intent(this, EquipmentsListActivity::class.java)
             startActivity(intent)
         }
+
+        val openTasks = findViewById<Button>(R.id.openTasks)
+        openTasks.setOnClickListener {
+            val intent = Intent(this, TasksListActivity::class.java)
+            startActivity(intent)
+        }
     }
 
-    private fun openStudiosListActivity(){
-        val intent = Intent(this, StudiosListActivity::class.java)
-        startActivity(intent)
-    }
 }

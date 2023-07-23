@@ -15,6 +15,15 @@
         android:theme="@style/Theme.CalendarApp"
         tools:targetApi="31">
         <activity
+            android:name=".TaskOfDayTaskActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TasksCalendar"
+            android:exported="false" />
+        <activity
+            android:name=".TasksListActivity"
+            android:exported="false" />
+        <activity
             android:name=".EquipmentCalendar"
             android:exported="false"
             android:label="@string/title_activity_equipment_calendar"

@@ -84,14 +84,14 @@ class EquipmentCalendar : AppCompatActivity() {
 
         val buttonMinusMonth = findViewById<Button>(R.id.minusMonth)
         buttonMinusMonth.setOnClickListener {
-            today = today.minusMonths(1)
+            today = today.minusDays(35)
             setCalendar()
             getDate()
         }
 
         val buttonPlusMonth = findViewById<Button>(R.id.plusMonth)
         buttonPlusMonth.setOnClickListener {
-            today = today.plusMonths(1)
+            today = today.plusDays(35)
             setCalendar()
             getDate()
         }
@@ -347,35 +347,37 @@ class EquipmentCalendar : AppCompatActivity() {
             for (i in calendarArray.indices) {
                 @Suppress("DEPRECATION")
                 if (calendarArray[i].text == date.date_start.date.toString()) {
-                    if (date.date_start.hours == 0 && date.date_start.minutes == 0)
-                        calendarArray[i].setBackgroundColor(red)
-                    else
-                        calendarArray[i].setBackgroundColor(yellow)
-                    val diff =
-                        TimeUnit.MILLISECONDS.toDays(date.date_end.time - date.date_start.time)
-                            .toInt()
-                    if (i + diff < calendarArray.size - 1) {
-                        for (j in 1..diff)
-                            calendarArray[i + j].setBackgroundColor(red)
-                        calendarArray[i + diff].setBackgroundColor(yellow)
-                    } else {
-                        for (j in i + 1 until calendarArray.size)
-                            calendarArray[j].setBackgroundColor(red)
-                    }
-                    break
-                }
-                @Suppress("DEPRECATION")
-                if (date.date_end.month == today.monthValue-1) {
-                    if (calendarArray[i].text == date.date_end.date.toString()) {
-                        calendarArray[i].setBackgroundColor(yellow)
-                        if (i != 0) {
-                            var j = i
-                            do {
-                                j--
+                    if (date.date_start.month == today.plusDays(i.toLong()).monthValue - 1) {
+                        if (date.date_start.hours == 0 && date.date_start.minutes == 0)
+                            calendarArray[i].setBackgroundColor(red)
+                        else
+                            calendarArray[i].setBackgroundColor(yellow)
+                        val diff =
+                            TimeUnit.MILLISECONDS.toDays(date.date_end.time - date.date_start.time)
+                                .toInt()
+                        if (i + diff < calendarArray.size - 1) {
+                            for (j in 1..diff)
+                                calendarArray[i + j].setBackgroundColor(red)
+                            calendarArray[i + diff].setBackgroundColor(yellow)
+                        } else {
+                            for (j in i + 1 until calendarArray.size)
                                 calendarArray[j].setBackgroundColor(red)
-                            } while (j != 0)
                         }
                         break
+                    }
+                    @Suppress("DEPRECATION")
+                    if (date.date_end.month == today.monthValue - 1) {
+                        if (calendarArray[i].text == date.date_end.date.toString()) {
+                            calendarArray[i].setBackgroundColor(yellow)
+                            if (i != 0) {
+                                var j = i
+                                do {
+                                    j--
+                                    calendarArray[j].setBackgroundColor(red)
+                                } while (j != 0)
+                            }
+                            break
+                        }
                     }
                 }
             }

@@ -16,17 +16,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.w3c.dom.Text
 import java.time.LocalDate
 import java.time.temporal.ChronoField
 import java.util.concurrent.TimeUnit
 
-
-class StudioCalendar : AppCompatActivity() {
+class TasksCalendar : AppCompatActivity() {
 
     companion object {
-        const val STUDIO_ID = "Studio_id"
-        const val STUDIO_NAME = "Studio_name"
+        const val TASK_ID = "Task_id"
+        const val TASK_NAME = "Task_name"
     }
 
     private lateinit var day1: TextView
@@ -73,12 +71,13 @@ class StudioCalendar : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_studio_calendar)
+        setContentView(R.layout.activity_equipment_calendar)
+
         today = LocalDate.now()
         createCalendar()
 
         val nameTV = findViewById<TextView>(R.id.name)
-        nameTV.text = intent.getStringExtra(STUDIO_NAME)
+        nameTV.text = intent.getStringExtra(TASK_NAME)
 
         setCalendar()
         getDate()
@@ -97,7 +96,6 @@ class StudioCalendar : AppCompatActivity() {
             getDate()
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createCalendar(){
@@ -284,28 +282,26 @@ class StudioCalendar : AppCompatActivity() {
     private fun setCalendar() {
 
         startMonth = today.minusDays((today.dayOfWeek.value - 1).toLong())
-        startDate =
-            startMonth.dayOfMonth.toString() + "-" + startMonth.monthValue + "-" + startMonth.year.toString()
+        startDate = startMonth.dayOfMonth.toString() + "-"+ startMonth.monthValue + "-"+ startMonth.year.toString()
         val end = startMonth.plusDays(34)
-        endDate = end.dayOfMonth.toString() + "-" + end.monthValue + "-" + end.year.toString()
+        endDate = end.dayOfMonth.toString() + "-"+ end.monthValue + "-"+ end.year.toString()
         day1.text = startMonth.dayOfMonth.toString()
         for (i in 1 until calendarArray.size) {
             calendarArray[i].text = startMonth.plusDays(i.toLong()).dayOfMonth.toString()
         }
-
         val week1 = findViewById<TextView>(R.id.Week1)
         val week2 = findViewById<TextView>(R.id.Week2)
         val week3 = findViewById<TextView>(R.id.Week3)
         val week4 = findViewById<TextView>(R.id.Week4)
         val week5 = findViewById<TextView>(R.id.Week5)
-        val array: Array<TextView> = arrayOf(week1, week2, week3, week4, week5)
+        val array : Array<TextView> = arrayOf(week1,week2,week3,week4,week5)
 
         val weekOfYear = today.get(ChronoField.ALIGNED_WEEK_OF_YEAR)
-        for (i in array.indices)
-            array[i].text = (weekOfYear + i).toString()
+        for(i in array.indices)
+            array[i].text = (weekOfYear+i).toString()
 
         val dateTV = findViewById<TextView>(R.id.DateTV)
-        when (today.monthValue) {
+        when(today.monthValue){
             1 -> dateTV.text = "Январь " + today.year.toString()
             2 -> dateTV.text = "Февраль " + today.year.toString()
             3 -> dateTV.text = "Март " + today.year.toString()
@@ -319,9 +315,8 @@ class StudioCalendar : AppCompatActivity() {
             11 -> dateTV.text = "Ноябрь " + today.year.toString()
             12 -> dateTV.text = "Декабрь " + today.year.toString()
         }
-
         val green = Color.rgb(119, 221, 119)
-        calendarArray.forEach {textView ->  
+        calendarArray.forEach {textView ->
             textView.setBackgroundColor(green)
         }
     }
@@ -329,13 +324,13 @@ class StudioCalendar : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getDate() {
         CoroutineScope(Dispatchers.Default).launch {
-            val studioId = intent.getStringExtra(STUDIO_ID)
+            val taskId = intent.getStringExtra(TASK_ID)
             val url =
-                "https://www.mamont-server.ru:8888/api/check_studio/$studioId/$startDate/$endDate"
+                "https://www.mamont-server.ru:8888/api/project_tasks/$taskId/$startDate/$endDate"
             HttpClient().use { client ->
                 val dataString = client.get<String>(url)
-                val typeToken = object : TypeToken<ArrayList<StudiosJson>>() {}.type
-                val studiosList = Gson().fromJson<ArrayList<StudiosJson>>(dataString, typeToken)
+                val typeToken = object : TypeToken<ArrayList<TasksJson>>() {}.type
+                val studiosList = Gson().fromJson<ArrayList<TasksJson>>(dataString, typeToken)
                 withContext(Dispatchers.Main) {
                     calendarSchedule(studiosList)
                 }
@@ -344,48 +339,47 @@ class StudioCalendar : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun calendarSchedule(studiosDateArray: ArrayList<StudiosJson>) {
-        val red = Color.rgb(232, 91, 93)
-        val yellow = Color.rgb(255, 228, 136)
-        val blue = Color.rgb(102, 217, 255)
-
-        studiosDateArray.forEach { date ->
+    private fun calendarSchedule(tasksDateArray: ArrayList<TasksJson>){
+        val red = Color.rgb(232,91,93)
+        val yellow = Color.rgb(	255,	228,136)
+        val blue = Color.rgb(51,166,204)
+        tasksDateArray.forEach{date ->
             for (i in calendarArray.indices) {
                 @Suppress("DEPRECATION")
-                if (calendarArray[i].text == date.date_start.date.toString()) {
-                    if (date.date_start.month == today.plusDays(i.toLong()).monthValue - 1) {
-                        if (date.date_start.hours == 0 && date.date_start.minutes == 0)
-                            calendarArray[i].setBackgroundColor(red)
-                        else
+                    if (calendarArray[i].text == date.date_start.date.toString()) {
+                        if (date.date_start.month == today.plusDays(i.toLong()).monthValue-1) {
+                            if (date.date_start.hours == 0 && date.date_start.minutes == 0)
+                                calendarArray[i].setBackgroundColor(red)
+                            else
+                                calendarArray[i].setBackgroundColor(yellow)
+                            val diff =
+                                TimeUnit.MILLISECONDS.toDays(date.date_stop.time - date.date_start.time)
+                                    .toInt()
+                            if (i + diff < calendarArray.size - 1) {
+                                for (j in 1..diff)
+                                    calendarArray[i + j].setBackgroundColor(red)
+                                calendarArray[i + diff].setBackgroundColor(yellow)
+                            } else {
+                                for (j in i + 1 until calendarArray.size)
+                                    calendarArray[j].setBackgroundColor(red)
+                            }
+                            break
+                        }
+                    }
+                    @Suppress("DEPRECATION")
+                    if (date.date_stop.month == today.monthValue - 1) {
+                        if (calendarArray[i].text == date.date_stop.date.toString()) {
                             calendarArray[i].setBackgroundColor(yellow)
-                        val diff =
-                            TimeUnit.MILLISECONDS.toDays(date.date_end.time - date.date_start.time)
-                                .toInt()
-                        if (i + diff < calendarArray.size - 1) {
-                            for (j in 1..diff)
-                                calendarArray[i + j].setBackgroundColor(red)
-                            calendarArray[i + diff].setBackgroundColor(yellow)
-                        } else {
-                            for (j in i + 1 until calendarArray.size)
-                                calendarArray[j].setBackgroundColor(red)
+                            if (i != 0) {
+                                var j = i
+                                do {
+                                    j--
+                                    calendarArray[j].setBackgroundColor(red)
+                                } while (j != 0)
+                            }
+                            break
                         }
-                        break
                     }
-                }
-                @Suppress("DEPRECATION")
-                if (date.date_end.month == today.monthValue-1) {
-                    if (calendarArray[i].text == date.date_end.date.toString()) {
-                        calendarArray[i].setBackgroundColor(yellow)
-                        if (i != 0) {
-                            var j = i
-                            do {
-                                j--
-                                calendarArray[j].setBackgroundColor(red)
-                            } while (j != 0)
-                        }
-                        break
-                    }
-                }
             }
         }
         if (today == LocalDate.now())
@@ -393,14 +387,13 @@ class StudioCalendar : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun openTaskOfDayActivity(day: Int) {
-        val studioId = intent.getStringExtra(STUDIO_ID)
-        val intent = Intent(this, TaskOfDayStudioActivity::class.java)
+    private fun openTaskOfDayActivity(day:Int){
+        val studioId = intent.getStringExtra(TASK_ID)
+        val intent = Intent(this, TaskOfDayTaskActivity::class.java)
         val date = startMonth.plusDays(day.toLong())
-        val dateStr =
-            date.dayOfMonth.toString() + "-" + date.monthValue + "-" + date.year.toString()
-        intent.putExtra(TaskOfDayStudioActivity.DATE, dateStr)
-        intent.putExtra(TaskOfDayStudioActivity.STUDIO, studioId)
+        val dateStr = date.dayOfMonth.toString() + "-"+ date.monthValue + "-"+ date.year.toString()
+        intent.putExtra(TaskOfDayTaskActivity.DATE, dateStr)
+        intent.putExtra(TaskOfDayTaskActivity.TASK, studioId)
         startActivity(intent)
     }
 }
