@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -98,7 +99,7 @@ class TasksCalendar : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createCalendar(){
+    private fun createCalendar() {
         day1 = findViewById(R.id.TV1)
         day1.setOnClickListener {
             openTaskOfDayActivity(0)
@@ -278,13 +279,15 @@ class TasksCalendar : AppCompatActivity() {
             day35
         )
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setCalendar() {
 
         startMonth = today.minusDays((today.dayOfWeek.value - 1).toLong())
-        startDate = startMonth.dayOfMonth.toString() + "-"+ startMonth.monthValue + "-"+ startMonth.year.toString()
+        startDate =
+            startMonth.dayOfMonth.toString() + "-" + startMonth.monthValue + "-" + startMonth.year.toString()
         val end = startMonth.plusDays(34)
-        endDate = end.dayOfMonth.toString() + "-"+ end.monthValue + "-"+ end.year.toString()
+        endDate = end.dayOfMonth.toString() + "-" + end.monthValue + "-" + end.year.toString()
         day1.text = startMonth.dayOfMonth.toString()
         for (i in 1 until calendarArray.size) {
             calendarArray[i].text = startMonth.plusDays(i.toLong()).dayOfMonth.toString()
@@ -294,14 +297,14 @@ class TasksCalendar : AppCompatActivity() {
         val week3 = findViewById<TextView>(R.id.Week3)
         val week4 = findViewById<TextView>(R.id.Week4)
         val week5 = findViewById<TextView>(R.id.Week5)
-        val array : Array<TextView> = arrayOf(week1,week2,week3,week4,week5)
+        val array: Array<TextView> = arrayOf(week1, week2, week3, week4, week5)
 
         val weekOfYear = today.get(ChronoField.ALIGNED_WEEK_OF_YEAR)
-        for(i in array.indices)
-            array[i].text = (weekOfYear+i).toString()
+        for (i in array.indices)
+            array[i].text = (weekOfYear + i).toString()
 
         val dateTV = findViewById<TextView>(R.id.DateTV)
-        when(today.monthValue){
+        when (today.monthValue) {
             1 -> dateTV.text = "Январь " + today.year.toString()
             2 -> dateTV.text = "Февраль " + today.year.toString()
             3 -> dateTV.text = "Март " + today.year.toString()
@@ -316,7 +319,7 @@ class TasksCalendar : AppCompatActivity() {
             12 -> dateTV.text = "Декабрь " + today.year.toString()
         }
         val green = Color.rgb(119, 221, 119)
-        calendarArray.forEach {textView ->
+        calendarArray.forEach { textView ->
             textView.setBackgroundColor(green)
         }
     }
@@ -339,47 +342,53 @@ class TasksCalendar : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun calendarSchedule(tasksDateArray: ArrayList<TasksJson>){
-        val red = Color.rgb(232,91,93)
-        val yellow = Color.rgb(	255,	228,136)
-        val blue = Color.rgb(51,166,204)
-        tasksDateArray.forEach{date ->
+    private fun calendarSchedule(tasksDateArray: ArrayList<TasksJson>) {
+        val red = Color.rgb(232, 91, 93)
+        val yellow = Color.rgb(255, 228, 136)
+        val blue = Color.rgb(51, 166, 204)
+        for (a in tasksDateArray.indices) {
             for (i in calendarArray.indices) {
                 @Suppress("DEPRECATION")
-                    if (calendarArray[i].text == date.date_start.date.toString()) {
-                        if (date.date_start.month == today.plusDays(i.toLong()).monthValue-1) {
-                            if (date.date_start.hours == 0 && date.date_start.minutes == 0)
-                                calendarArray[i].setBackgroundColor(red)
+                if (calendarArray[i].text == tasksDateArray[a].date_start.date.toString()) {
+                    if (tasksDateArray[a].date_start.month == today.plusDays(i.toLong()).monthValue - 1) {
+                        if (tasksDateArray[a].date_start.hours == 0 && tasksDateArray[a].date_start.minutes == 0)
+                            calendarArray[i].setBackgroundColor(red)
+                        else
+                            if (a > 0)
+                                if (tasksDateArray[a - 1].date_stop == tasksDateArray[a].date_start)
+                                    calendarArray[i].setBackgroundColor(red)
+                                else
+                                    calendarArray[i].setBackgroundColor(yellow)
                             else
                                 calendarArray[i].setBackgroundColor(yellow)
-                            val diff =
-                                TimeUnit.MILLISECONDS.toDays(date.date_stop.time - date.date_start.time)
-                                    .toInt()
-                            if (i + diff < calendarArray.size - 1) {
-                                for (j in 1..diff)
-                                    calendarArray[i + j].setBackgroundColor(red)
-                                calendarArray[i + diff].setBackgroundColor(yellow)
-                            } else {
-                                for (j in i + 1 until calendarArray.size)
-                                    calendarArray[j].setBackgroundColor(red)
-                            }
-                            break
+                        val diff =
+                            TimeUnit.MILLISECONDS.toDays(tasksDateArray[a].date_stop.time - tasksDateArray[a].date_start.time)
+                                .toInt()
+                        if (i + diff < calendarArray.size - 1) {
+                            for (j in 1..diff)
+                                calendarArray[i + j].setBackgroundColor(red)
+                            calendarArray[i + diff].setBackgroundColor(yellow)
+                        } else {
+                            for (j in i + 1 until calendarArray.size)
+                                calendarArray[j].setBackgroundColor(red)
                         }
+                        break
                     }
-                    @Suppress("DEPRECATION")
-                    if (date.date_stop.month == today.monthValue - 1) {
-                        if (calendarArray[i].text == date.date_stop.date.toString()) {
-                            calendarArray[i].setBackgroundColor(yellow)
-                            if (i != 0) {
-                                var j = i
-                                do {
-                                    j--
-                                    calendarArray[j].setBackgroundColor(red)
-                                } while (j != 0)
-                            }
-                            break
+                }
+                @Suppress("DEPRECATION")
+                if (tasksDateArray[a].date_stop.month == today.monthValue - 1) {
+                    if (calendarArray[i].text == tasksDateArray[a].date_stop.date.toString()) {
+                        calendarArray[i].setBackgroundColor(yellow)
+                        if (i != 0) {
+                            var j = i
+                            do {
+                                j--
+                                calendarArray[j].setBackgroundColor(red)
+                            } while (j != 0)
                         }
+                        break
                     }
+                }
             }
         }
         if (today == LocalDate.now())
@@ -387,11 +396,12 @@ class TasksCalendar : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun openTaskOfDayActivity(day:Int){
+    private fun openTaskOfDayActivity(day: Int) {
         val studioId = intent.getStringExtra(TASK_ID)
         val intent = Intent(this, TaskOfDayTaskActivity::class.java)
         val date = startMonth.plusDays(day.toLong())
-        val dateStr = date.dayOfMonth.toString() + "-"+ date.monthValue + "-"+ date.year.toString()
+        val dateStr =
+            date.dayOfMonth.toString() + "-" + date.monthValue + "-" + date.year.toString()
         intent.putExtra(TaskOfDayTaskActivity.DATE, dateStr)
         intent.putExtra(TaskOfDayTaskActivity.TASK, studioId)
         startActivity(intent)

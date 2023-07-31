@@ -348,18 +348,22 @@ class StudioCalendar : AppCompatActivity() {
         val red = Color.rgb(232, 91, 93)
         val yellow = Color.rgb(255, 228, 136)
         val blue = Color.rgb(102, 217, 255)
-
-        studiosDateArray.forEach { date ->
+        for(a in studiosDateArray.indices){
             for (i in calendarArray.indices) {
                 @Suppress("DEPRECATION")
-                if (calendarArray[i].text == date.date_start.date.toString()) {
-                    if (date.date_start.month == today.plusDays(i.toLong()).monthValue - 1) {
-                        if (date.date_start.hours == 0 && date.date_start.minutes == 0)
+                if (calendarArray[i].text == studiosDateArray[a].date_start.date.toString()) {
+                    if (studiosDateArray[a].date_start.month == today.plusDays(i.toLong()).monthValue - 1) {
+                        if (studiosDateArray[a].date_start.hours == 0 && studiosDateArray[a].date_start.minutes == 0)
                             calendarArray[i].setBackgroundColor(red)
+                        if (a > 0)
+                            if (studiosDateArray[a - 1].date_end.time >= studiosDateArray[a].date_start.time)
+                                calendarArray[i].setBackgroundColor(red)
+                            else
+                                calendarArray[i].setBackgroundColor(yellow)
                         else
                             calendarArray[i].setBackgroundColor(yellow)
                         val diff =
-                            TimeUnit.MILLISECONDS.toDays(date.date_end.time - date.date_start.time)
+                            TimeUnit.MILLISECONDS.toDays(studiosDateArray[a].date_end.time - studiosDateArray[a].date_start.time)
                                 .toInt()
                         if (i + diff < calendarArray.size - 1) {
                             for (j in 1..diff)
@@ -373,8 +377,8 @@ class StudioCalendar : AppCompatActivity() {
                     }
                 }
                 @Suppress("DEPRECATION")
-                if (date.date_end.month == today.monthValue-1) {
-                    if (calendarArray[i].text == date.date_end.date.toString()) {
+                if (studiosDateArray[a].date_end.month == today.monthValue-1) {
+                    if (calendarArray[i].text == studiosDateArray[a].date_end.date.toString()) {
                         calendarArray[i].setBackgroundColor(yellow)
                         if (i != 0) {
                             var j = i

@@ -98,7 +98,7 @@ class EquipmentCalendar : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createCalendar(){
+    private fun createCalendar() {
         day1 = findViewById(R.id.TV1)
         day1.setOnClickListener {
             openTaskOfDayActivity(0)
@@ -278,13 +278,15 @@ class EquipmentCalendar : AppCompatActivity() {
             day35
         )
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setCalendar() {
 
         startMonth = today.minusDays((today.dayOfWeek.value - 1).toLong())
-        startDate = startMonth.dayOfMonth.toString() + "-"+ startMonth.monthValue + "-"+ startMonth.year.toString()
+        startDate =
+            startMonth.dayOfMonth.toString() + "-" + startMonth.monthValue + "-" + startMonth.year.toString()
         val end = startMonth.plusDays(34)
-        endDate = end.dayOfMonth.toString() + "-"+ end.monthValue + "-"+ end.year.toString()
+        endDate = end.dayOfMonth.toString() + "-" + end.monthValue + "-" + end.year.toString()
         day1.text = startMonth.dayOfMonth.toString()
         for (i in 1 until calendarArray.size) {
             calendarArray[i].text = startMonth.plusDays(i.toLong()).dayOfMonth.toString()
@@ -294,14 +296,14 @@ class EquipmentCalendar : AppCompatActivity() {
         val week3 = findViewById<TextView>(R.id.Week3)
         val week4 = findViewById<TextView>(R.id.Week4)
         val week5 = findViewById<TextView>(R.id.Week5)
-        val array : Array<TextView> = arrayOf(week1,week2,week3,week4,week5)
+        val array: Array<TextView> = arrayOf(week1, week2, week3, week4, week5)
 
         val weekOfYear = today.get(ChronoField.ALIGNED_WEEK_OF_YEAR)
-        for(i in array.indices)
-            array[i].text = (weekOfYear+i).toString()
+        for (i in array.indices)
+            array[i].text = (weekOfYear + i).toString()
 
         val dateTV = findViewById<TextView>(R.id.DateTV)
-        when(today.monthValue){
+        when (today.monthValue) {
             1 -> dateTV.text = "Январь " + today.year.toString()
             2 -> dateTV.text = "Февраль " + today.year.toString()
             3 -> dateTV.text = "Март " + today.year.toString()
@@ -316,7 +318,7 @@ class EquipmentCalendar : AppCompatActivity() {
             12 -> dateTV.text = "Декабрь " + today.year.toString()
         }
         val green = Color.rgb(119, 221, 119)
-        calendarArray.forEach {textView ->
+        calendarArray.forEach { textView ->
             textView.setBackgroundColor(green)
         }
     }
@@ -339,21 +341,26 @@ class EquipmentCalendar : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun calendarSchedule(equipmentsDateArray: ArrayList<EquipmentsJson>){
-        val red = Color.rgb(232,91,93)
-        val yellow = Color.rgb(	255,	228,136)
-        val blue = Color.rgb(51,166,204)
-        equipmentsDateArray.forEach{date ->
+    private fun calendarSchedule(equipmentsDateArray: ArrayList<EquipmentsJson>) {
+        val red = Color.rgb(232, 91, 93)
+        val yellow = Color.rgb(255, 228, 136)
+        val blue = Color.rgb(51, 166, 204)
+        for (a in equipmentsDateArray.indices) {
             for (i in calendarArray.indices) {
                 @Suppress("DEPRECATION")
-                if (calendarArray[i].text == date.date_start.date.toString()) {
-                    if (date.date_start.month == today.plusDays(i.toLong()).monthValue - 1) {
-                        if (date.date_start.hours == 0 && date.date_start.minutes == 0)
+                if (calendarArray[i].text == equipmentsDateArray[a].date_start.date.toString()) {
+                    if (equipmentsDateArray[a].date_start.month == today.plusDays(i.toLong()).monthValue - 1) {
+                        if (equipmentsDateArray[a].date_start.hours == 0 && equipmentsDateArray[a].date_start.minutes == 0)
                             calendarArray[i].setBackgroundColor(red)
+                        if (a > 0)
+                            if (equipmentsDateArray[a - 1].date_end.time >= equipmentsDateArray[a].date_start.time)
+                                calendarArray[i].setBackgroundColor(red)
+                            else
+                                calendarArray[i].setBackgroundColor(yellow)
                         else
                             calendarArray[i].setBackgroundColor(yellow)
                         val diff =
-                            TimeUnit.MILLISECONDS.toDays(date.date_end.time - date.date_start.time)
+                            TimeUnit.MILLISECONDS.toDays(equipmentsDateArray[a].date_end.time - equipmentsDateArray[a].date_start.time)
                                 .toInt()
                         if (i + diff < calendarArray.size - 1) {
                             for (j in 1..diff)
@@ -365,21 +372,22 @@ class EquipmentCalendar : AppCompatActivity() {
                         }
                         break
                     }
-                    @Suppress("DEPRECATION")
-                    if (date.date_end.month == today.monthValue - 1) {
-                        if (calendarArray[i].text == date.date_end.date.toString()) {
-                            calendarArray[i].setBackgroundColor(yellow)
-                            if (i != 0) {
-                                var j = i
-                                do {
-                                    j--
-                                    calendarArray[j].setBackgroundColor(red)
-                                } while (j != 0)
-                            }
-                            break
+                }
+                @Suppress("DEPRECATION")
+                if (equipmentsDateArray[a].date_end.month == today.monthValue - 1) {
+                    if (calendarArray[i].text == equipmentsDateArray[a].date_end.date.toString()) {
+                        calendarArray[i].setBackgroundColor(yellow)
+                        if (i != 0) {
+                            var j = i
+                            do {
+                                j--
+                                calendarArray[j].setBackgroundColor(red)
+                            } while (j != 0)
                         }
+                        break
                     }
                 }
+
             }
         }
         if (today == LocalDate.now())
@@ -387,11 +395,12 @@ class EquipmentCalendar : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun openTaskOfDayActivity(day:Int){
+    private fun openTaskOfDayActivity(day: Int) {
         val studioId = intent.getStringExtra(EQUIPMENT_ID)
         val intent = Intent(this, TaskOfDayEquipmentActivity::class.java)
         val date = startMonth.plusDays(day.toLong())
-        val dateStr = date.dayOfMonth.toString() + "-"+ date.monthValue + "-"+ date.year.toString()
+        val dateStr =
+            date.dayOfMonth.toString() + "-" + date.monthValue + "-" + date.year.toString()
         intent.putExtra(TaskOfDayEquipmentActivity.DATE, dateStr)
         intent.putExtra(TaskOfDayEquipmentActivity.EQUIPMENT, studioId)
         startActivity(intent)

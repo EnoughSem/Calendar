@@ -73,6 +73,7 @@ class TasksJsonAdapter(
         val task = view.findViewById<TextView>(R.id.studioTask)
         val timeStart = view.findViewById<TextView>(R.id.timeStart)
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
+        val TVProgress = view.findViewById<TextView>(R.id.TVProgress)
 
         task.text = array[position].task_name
         timeStart.text = "С " + array[position].date_start.toInstant()
@@ -81,6 +82,7 @@ class TasksJsonAdapter(
             .atOffset(ZoneOffset.UTC)
             .toLocalDateTime().format(dateFormat)
         progressBar.progress = array[position].procent
+        TVProgress.text = progressBar.progress.toString() + "%"
 
         return view
     }
